@@ -1,0 +1,48 @@
+version: '3'
+
+networks:
+  dotnetpostgre-dev:
+    driver: bridge 
+
+services:
+  dotnetpostgre:
+    image: dotnetpostgre
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"     
+    environment:
+      DB_CONNECTION_STRING: "host=postgres;port=5432;database=postgres;username=postgres;password=docker"
+    networks:
+      - dotnetpostgre-dev  
+  
+  postgres:
+    image: postgres
+    ports:
+      - "5432"
+    expose:
+      - "5432"
+    restart: always
+    volumes:
+      - /home/siddharth/docker/volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "docker"
+      POSTGRES_DB: "postgres"
+    networks:
+      - dotnetpostgre-dev
+     
+  neo4j:
+    image: neo4j
+    ports:                    
+      - "7474:7474"
+      - "7687:7687"
+    volumes:                  
+      - neo4j_myvolume:/data
+    networks:
+      - dotnetpostgre-dev
+
+volumes:
+  myvolume:
+  neo4j_myvolume:
